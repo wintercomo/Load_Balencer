@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28714.193
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoadBalencer", "LoadBalencer\LoadBalencer.csproj", "{68DD0619-5DAF-4ED1-BECA-7DA4ECF1B732}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoadBalencerClassLibrary", "LoadBalencerClassLibrary\LoadBalencerClassLibrary.csproj", "{3C2B9B7F-8912-4625-95E2-A7BA71DA1EA7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{68DD0619-5DAF-4ED1-BECA-7DA4ECF1B732}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68DD0619-5DAF-4ED1-BECA-7DA4ECF1B732}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68DD0619-5DAF-4ED1-BECA-7DA4ECF1B732}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68DD0619-5DAF-4ED1-BECA-7DA4ECF1B732}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C2B9B7F-8912-4625-95E2-A7BA71DA1EA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C2B9B7F-8912-4625-95E2-A7BA71DA1EA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C2B9B7F-8912-4625-95E2-A7BA71DA1EA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C2B9B7F-8912-4625-95E2-A7BA71DA1EA7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3EFF2089-C71D-4C6B-8D56-206C03882F00}
+	EndGlobalSection
+EndGlobal
