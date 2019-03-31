@@ -4,7 +4,7 @@ namespace LoadBalencerClassLibrary
 {
     public class LoadBalencerViewModel : BindableBase
     {
-        int port = 9000;
+        int port = 8080;
 
         public int Port { get => port;
             set

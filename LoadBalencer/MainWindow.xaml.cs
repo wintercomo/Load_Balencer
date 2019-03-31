@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,10 +22,26 @@ namespace LoadBalencer
     /// </summary>
     public partial class MainWindow : Window
     {
+        LoadBalencerServer loadBalencer;
+        LoadBalencerViewModel model;
+        TcpClient tcpClient;
+        StreamReader streamReader;
         public MainWindow()
         {
             InitializeComponent();
-            LoadBalencerViewModel model = new LoadBalencerViewModel();
+            model = new LoadBalencerViewModel();
+            loadBalencer = new LoadBalencerServer();
+            streamReader = new StreamReader();
         }
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        {
+            TcpListener tcplistener = loadBalencer.StartAServer(Int32.Parse(PortBox.Text));
+            int bufferSize = 1;
+            //Task t = Task.Run(() => loadBalencer.HandleHttpRequest(tcplistener, bufferSize));
+            await loadBalencer.HandleHttpRequest(tcplistener, bufferSize);
+            //loadBalencer.Start(Int32.Parse(PortBox.Text));
+        }
+
+        
     }
 }
