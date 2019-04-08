@@ -1,12 +1,19 @@
-﻿using System;
+﻿using LoadBalencerClassLibrary.ViewModels;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace LoadBalencerClassLibrary
 {
     public class LoadBalencerViewModel : BindableBase
     {
         int port = 8080;
-        List<Algorithm> algorithms = new List<Algorithm> { { new Algorithm() { Name = "Option 1"} } };
+        ItemListViewModel model = new ItemListViewModel();
+        ObservableCollection<IAlgorithm> algorithms;
+        public LoadBalencerViewModel()
+        {
+            this.algorithms = model.AllItems;
+        }
 
         public int Port
         {
@@ -16,8 +23,12 @@ namespace LoadBalencerClassLibrary
                 if (SetProperty(ref port, value)) this.port = value;
             }
         }
+        public IAlgorithm GetCurrentItem()
+        {
+            return model.CurrentItem;
+        }
 
-        public List<Algorithm> Algorithms
+        public ObservableCollection<IAlgorithm> Algorithms
         {
             get => algorithms;
             set

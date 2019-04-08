@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -11,15 +12,13 @@ namespace LoadBalencerClassLibrary
 {
     public class LoadBalencerServer
     {
-        TcpListener listener;
         StreamReader streamReader = new StreamReader();
         ObservableCollection<Server> allServers;
-        List<Algorithm> algorithms;
-
-        public LoadBalencerServer(ObservableCollection<Server> allServers, List<Algorithm> algorithms)
+        LoadBalencerViewModel model;
+        public LoadBalencerServer(ObservableCollection<Server> allServers, LoadBalencerViewModel model)
         {
             this.allServers = allServers;
-            this.algorithms = algorithms;
+            this.model = model;
         }
 
         public TcpListener StartAServer(int port)
@@ -31,20 +30,28 @@ namespace LoadBalencerClassLibrary
         }
         public async Task<ObservableCollection<Server>> CheckServerStatusAsync(ObservableCollection<Server> servers)
         {
-
             foreach (var server in servers)
             {
                 TcpClient proxyTcpClient = await TryConnect(server);
-                if (proxyTcpClient == null)
-                {
-                    server.Status = "Down";
-                }
-                else
-                {
-                    server.Status = "Normal";
-                }
+                if (proxyTcpClient == null) server.Status = "Not running";
+                else server.Status = "Normal";
             }
             return servers;
+        }
+        private static void UpdateServerStatus(Server server, long elapsedMs)
+        {
+            if (elapsedMs > 3000)
+            {
+                server.Status = "Down";
+            }
+            else if (elapsedMs > 1000)
+            {
+                server.Status = "Busy";
+            }
+            else
+            {
+                server.Status = "Normal";
+            }
         }
 
         private async Task<TcpClient> TryConnect(Server server)
@@ -54,7 +61,6 @@ namespace LoadBalencerClassLibrary
                 TcpClient tcpClient = new TcpClient();
                 await tcpClient.ConnectAsync(server.ServerURL, server.Port);
                 return tcpClient;
-
             }
             catch (Exception)
             {
@@ -66,21 +72,16 @@ namespace LoadBalencerClassLibrary
         {
             using (TcpClient tcpClient = await tcplistener.AcceptTcpClientAsync())
             {
-
                 using (NetworkStream clientStream = tcpClient.GetStream())
                 {
                     byte[] requestBytes = await streamReader.GetBytesFromReading(bufferSize, clientStream);
-                    string requestInfo = ASCIIEncoding.ASCII.GetString(requestBytes, 0, requestBytes.Length);
-                    HttpRequest request = new HttpRequest(requestInfo);
-
-                    IEnumerable<Server> onlineServers = allServers.Where(server => server.Status == "Normal");
-                    Server bestServer = getBestServer(onlineServers);
-
-                    byte[] responseBytes = await GetServerResponseAsync(bestServer, requestBytes);
-                    ///var responseBytes = await streamReader.MakeProxyRequestAsync(h1, bufferSize);
+                    Server currentServer = getBestServer();
+                    Stopwatch watch = Stopwatch.StartNew();
+                    byte[] responseBytes = await GetServerResponseAsync(currentServer, requestBytes);
+                    watch.Stop();
+                    long elapsedMs = watch.ElapsedMilliseconds;
+                    UpdateServerStatus(currentServer, elapsedMs);
                     await streamReader.WriteMessageWithBufferAsync(clientStream, responseBytes, bufferSize);
-                    clientStream.Dispose();
-                    tcpClient.Dispose();
                 }
             }
         }
@@ -98,15 +99,14 @@ namespace LoadBalencerClassLibrary
             }
         }
 
-        private Server getBestServer(IEnumerable<Server> onlineServers)
+        private Server getBestServer()
         {
+            List<Server> onlineServers = allServers.Where(server => server.Status == "Normal").ToList();
+            if (onlineServers.Count == 0) onlineServers = allServers.Where(server => server.Status == "Busy").ToList();
+            if (onlineServers.Count == 0) onlineServers = allServers.Where(server => server.Status == "Down").ToList();
             //For now take the first one
-            return onlineServers.First();
-        }
-
-        public void Start(int port)
-        {
-
+            IAlgorithm currentAlgorithm = model.GetCurrentItem();
+            return currentAlgorithm.GetBestServer(onlineServers);
         }
     }
 }

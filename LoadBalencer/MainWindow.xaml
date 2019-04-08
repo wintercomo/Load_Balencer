@@ -4,10 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LoadBalencerClassLibrary;assembly=LoadBalencerClassLibrary"
+        xmlns:local1="clr-namespace:LoadBalencerClassLibrary.ViewModels;assembly=LoadBalencerClassLibrary"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.Resources>
         <local:LoadBalencerViewModel x:Key="LoadBalencerViewModel"></local:LoadBalencerViewModel>
+        <local1:ItemListViewModel x:Key="Algorithms"></local1:ItemListViewModel>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -62,12 +64,10 @@
             <StackPanel Grid.Column="1" Grid.Row="3" Margin="10">
                 <ComboBox x:Name="AlgoritmComboBox"
                           ItemsSource="{Binding Path=Algorithms}"
-                          DisplayMemberPath="Name"
-                          SelectedValuePath="name"
-                          SelectedValue="{Binding Path=Algorithms}">
-                    
+                            SelectedItem="{Binding Path=CurrentItem, Mode=TwoWay}">
                 </ComboBox>
-                    
+                <TextBlock Text="{Binding Path=CurrentItem, Mode=TwoWay}" />
+
             </StackPanel>
         </Grid>
     </Grid>
