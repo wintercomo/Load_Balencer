@@ -19,7 +19,26 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         <TextBlock Grid.Column="0" Grid.Row="0" Margin="2">Server Lijst:</TextBlock>
-        <ListBox Grid.Column="0" Grid.Row="1" Margin="5"></ListBox>
+        <ListBox Name="serverList" Grid.Column="0" Grid.Row="1" Margin="5">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="50"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Row="0" Grid.Column="0" Content="{Binding ServerURL}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Port}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Status}"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
 
         <TextBlock Grid.Column="1" Grid.Row="0">Load balencer:</TextBlock>
         <Grid DataContext="{StaticResource LoadBalencerViewModel}" Grid.Column="1" Grid.Row="1">
@@ -30,20 +49,25 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"></RowDefinition>
                 <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
             <Label Grid.Column="0" Grid.Row="0" Content="Port"></Label>
             <TextBox Name="PortBox" Grid.Column="1" Grid.Row="0" Text="{Binding Port, Mode = TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
             <Button Grid.ColumnSpan="2" Grid.Row="1" Content="Start/Stop load balencer" Click="Button_Click"></Button>
+            <Button Grid.ColumnSpan="2" Grid.Row="2" Content="Update server status" Click="Button_Click_1"></Button>
 
-            <Label Grid.Column="0" Grid.Row="2" Content="Methode"></Label>
-            <StackPanel Grid.Column="1" Grid.Row="2" Margin="10">
-                <ComboBox>
-                    <ComboBoxItem>ComboBox Item #1</ComboBoxItem>
-                    <ComboBoxItem IsSelected="True">ComboBox Item #2</ComboBoxItem>
-                    <ComboBoxItem>ComboBox Item #3</ComboBoxItem>
+            <Label Grid.Column="0" Grid.Row="3" Content="Methode"></Label>
+            <StackPanel Grid.Column="1" Grid.Row="3" Margin="10">
+                <ComboBox x:Name="AlgoritmComboBox"
+                          ItemsSource="{Binding Path=Algorithms}"
+                          DisplayMemberPath="Name"
+                          SelectedValuePath="name"
+                          SelectedValue="{Binding Path=Algorithms}">
+                    
                 </ComboBox>
+                    
             </StackPanel>
         </Grid>
     </Grid>
