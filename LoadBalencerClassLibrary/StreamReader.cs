@@ -9,12 +9,6 @@ namespace LoadBalencerClassLibrary
 {
     public class StreamReader
     {
-
-        byte[] placeholderBytes = new byte[120];
-        public StreamReader()
-        {
-            //placeholderBytes = File.ReadAllBytes(@"Assets\Placeholder.png");
-        }
         public async Task WriteMessageWithBufferAsync(NetworkStream destinationStream, byte[] messageBytes, int buffer)
         {
             if (messageBytes == null) return;

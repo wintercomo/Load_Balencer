@@ -12,7 +12,6 @@ namespace LoadBalencerClassLibrary
 
         protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
         {
-            Console.WriteLine($"Changing {propertyName} to {value}");
             if (object.Equals(storage, value))
                 return false;
 

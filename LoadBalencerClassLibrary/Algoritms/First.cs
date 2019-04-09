@@ -9,7 +9,6 @@ namespace LoadBalencerClassLibrary
     {
         string name;
         string value;
-        Boolean selected = false;
 
         public string Name
         {
@@ -20,13 +19,11 @@ namespace LoadBalencerClassLibrary
             }
         }
 
-        public Server GetBestServer(List<Server> allServers)
+        public string ServerPort { get; set; }
+
+        public Server GetBestServer(List<Server> allServers, int serverPort = 0)
         {
             return allServers.First();
-        }
-        string IAlgorithm.Name()
-        {
-            return this.name;
         }
     }
 }

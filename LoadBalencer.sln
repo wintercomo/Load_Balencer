@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.28714.193
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoadBalencer", "LoadBalencer\LoadBalencer.csproj", "{68DD0619-5DAF-4ED1-BECA-7DA4ECF1B732}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoadBalencerClassLibrary", "LoadBalencerClassLibrary\LoadBalencerClassLibrary.csproj", "{3C2B9B7F-8912-4625-95E2-A7BA71DA1EA7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoadBalencerClassLibrary", "LoadBalencerClassLibrary\LoadBalencerClassLibrary.csproj", "{3C2B9B7F-8912-4625-95E2-A7BA71DA1EA7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoadBalencerAlgorithms", "LoadBalencerAlgorithms\LoadBalencerAlgorithms.csproj", "{43A418B8-8302-4576-B4C4-D75FE029BF69}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{3C2B9B7F-8912-4625-95E2-A7BA71DA1EA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C2B9B7F-8912-4625-95E2-A7BA71DA1EA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C2B9B7F-8912-4625-95E2-A7BA71DA1EA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43A418B8-8302-4576-B4C4-D75FE029BF69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43A418B8-8302-4576-B4C4-D75FE029BF69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43A418B8-8302-4576-B4C4-D75FE029BF69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43A418B8-8302-4576-B4C4-D75FE029BF69}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

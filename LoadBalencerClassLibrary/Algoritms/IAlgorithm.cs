@@ -4,7 +4,6 @@ namespace LoadBalencerClassLibrary
 {
     public interface IAlgorithm
     {
-        string Name();
-        Server GetBestServer(List<Server> allServers);
+        Server GetBestServer(List<Server> allServers, int serverPort = 0);
     }
 }

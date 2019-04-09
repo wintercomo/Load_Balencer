@@ -9,7 +9,6 @@
         Title="MainWindow" Height="450" Width="800">
     <Window.Resources>
         <local:LoadBalencerViewModel x:Key="LoadBalencerViewModel"></local:LoadBalencerViewModel>
-        <local1:ItemListViewModel x:Key="Algorithms"></local1:ItemListViewModel>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -43,12 +42,13 @@
         </ListBox>
 
         <TextBlock Grid.Column="1" Grid.Row="0">Load balencer:</TextBlock>
-        <Grid DataContext="{StaticResource LoadBalencerViewModel}" Grid.Column="1" Grid.Row="1">
+        <Grid Name="loadBalencerSettings" DataContext="{StaticResource LoadBalencerViewModel}" Grid.Column="1" Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="30"></RowDefinition>
                 <RowDefinition Height="30"></RowDefinition>
                 <RowDefinition Height="40"></RowDefinition>
                 <RowDefinition Height="40"></RowDefinition>
@@ -59,15 +59,15 @@
 
             <Button Grid.ColumnSpan="2" Grid.Row="1" Content="Start/Stop load balencer" Click="Button_Click"></Button>
             <Button Grid.ColumnSpan="2" Grid.Row="2" Content="Update server status" Click="Button_Click_1"></Button>
+            <Button Grid.Column="3" Grid.Row="3" Content="Load Algorithms" Click="Button_Click_2"></Button>
 
-            <Label Grid.Column="0" Grid.Row="3" Content="Methode"></Label>
-            <StackPanel Grid.Column="1" Grid.Row="3" Margin="10">
+            <Label Grid.Column="0" Grid.Row="4" Content="Methode"></Label>
+            <StackPanel Grid.Column="1" Grid.Row="4" Margin="10">
                 <ComboBox x:Name="AlgoritmComboBox"
                           ItemsSource="{Binding Path=Algorithms}"
-                            SelectedItem="{Binding Path=CurrentItem, Mode=TwoWay}">
+                          SelectedItem="{Binding Path=SelectedAlgorithm}"
+                          IsSynchronizedWithCurrentItem="True">
                 </ComboBox>
-                <TextBlock Text="{Binding Path=CurrentItem, Mode=TwoWay}" />
-
             </StackPanel>
         </Grid>
     </Grid>

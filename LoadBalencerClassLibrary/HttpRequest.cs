@@ -111,7 +111,7 @@ namespace LoadBalencerClassLibrary
             if (headers.ContainsKey(headerType))
             {
                 return headers[headerType];
-            }return "";
+            }return null;
         }
         private void SaveHeader(string[] result, int i)
         {
