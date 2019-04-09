@@ -4,6 +4,6 @@ namespace LoadBalencerClassLibrary
 {
     public interface IAlgorithm
     {
-        Server GetBestServer(List<Server> allServers, int serverPort = 0);
+        Server GetBestServer(List<Server> allServers, string[] cookieParams = null);
     }
 }

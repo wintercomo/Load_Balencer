@@ -50,7 +50,9 @@ namespace LoadBalencer
             int bufferSize = 2024;
             while (true)
             {
+                loadBalencer.StartHealthChecker();
                 await Task.Run(async () => await loadBalencer.HandleHttpRequest(tcplistener, bufferSize));
+
             }
         }
 

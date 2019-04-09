@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LoadBalencerClassLibrary.DataModels;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -15,6 +16,7 @@ namespace LoadBalencerClassLibrary
             this.ServerURL = serverURL;
             this.Port = port;
             this.Status = status;
+            this.Sessions = new List<Session>();
         }
 
         public string ServerURL
@@ -41,5 +43,7 @@ namespace LoadBalencerClassLibrary
                 if (SetProperty(ref status, value)) this.status = value;
             }
         }
+
+        public List<Session> Sessions { get; set; }
     }
 }

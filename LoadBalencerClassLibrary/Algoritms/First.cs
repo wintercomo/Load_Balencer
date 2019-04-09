@@ -7,21 +7,14 @@ namespace LoadBalencerClassLibrary
 {
     public class First : IAlgorithm
     {
-        string name;
-        string value;
-
         public string Name
         {
-            get => name;
-            set
-            {
-                this.name = value;
-            }
+            get => this.GetType().Name;
         }
 
         public string ServerPort { get; set; }
 
-        public Server GetBestServer(List<Server> allServers, int serverPort = 0)
+        public Server GetBestServer(List<Server> allServers, string[] cookieParams = null)
         {
             return allServers.First();
         }

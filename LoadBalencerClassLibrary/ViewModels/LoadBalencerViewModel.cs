@@ -13,7 +13,7 @@ namespace LoadBalencerClassLibrary
 
         public LoadBalencerViewModel()
         {
-            this.allItems = new ObservableCollection<IAlgorithm>() { new First() { Name = "First" }, new HealthyAlgorithm() { Name = "Health Based" } };
+            this.allItems = new ObservableCollection<IAlgorithm>() { new First(), new HealthyAlgorithm()};
         }
         public int Port
         {

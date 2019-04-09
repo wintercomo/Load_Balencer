@@ -66,6 +66,7 @@
                 <ComboBox x:Name="AlgoritmComboBox"
                           ItemsSource="{Binding Path=Algorithms}"
                           SelectedItem="{Binding Path=SelectedAlgorithm}"
+                          DisplayMemberPath="Name"
                           IsSynchronizedWithCurrentItem="True">
                 </ComboBox>
             </StackPanel>

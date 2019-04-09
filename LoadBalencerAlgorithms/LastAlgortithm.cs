@@ -8,25 +8,15 @@ namespace LoadBalencerAlgorithms
 {
     public class LastAlgorithm : IAlgorithm
     {
-        string name;
-        string value;
-
+       
         public string Name
         {
-            get => name;
-            set
-            {
-                this.name = value;
-            }
+            get => this.GetType().Name;
         }
 
-        public Server GetBestServer(List<Server> allServers)
+        public Server GetBestServer(List<Server> allServers, string[] cookieParams = null)
         {
             return allServers.Last();
-        }
-        string IAlgorithm.GetName()
-        {
-            return this.name;
         }
     }
 }

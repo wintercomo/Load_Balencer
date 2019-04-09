@@ -7,8 +7,11 @@ namespace LoadBalencerClassLibrary.Algoritms
     class RoundRobin : IAlgorithm
     {
         int index = 0;
-
-        public Server GetBestServer(List<Server> allServers, int serverPort = 0)
+        public string Name
+        {
+            get => this.GetType().Name;
+        }
+        public Server GetBestServer(List<Server> allServers, string[] cookieParams = null)
         {
             if (index >= allServers.Count) index = 0;
             int serverIndex = index;
