@@ -9,11 +9,11 @@ namespace LoadBalencerClassLibrary
     public class LoadBalencerViewModel : BindableBase
     {
         int port = 80;
-        ObservableCollection<IAlgorithm> allItems;
+        ObservableCollection<IAlgorithm> allAlgorithms;
 
         public LoadBalencerViewModel()
         {
-            this.allItems = new ObservableCollection<IAlgorithm>() { new First(), new HealthyAlgorithm()};
+            this.allAlgorithms = new ObservableCollection<IAlgorithm>() {new HealthyAlgorithm()};
         }
         public int Port
         {
@@ -26,10 +26,10 @@ namespace LoadBalencerClassLibrary
 
         public ObservableCollection<IAlgorithm> Algorithms
         {
-            get => allItems;
+            get => allAlgorithms;
             set
             {
-                if (SetProperty(ref allItems, value)) this.allItems = value;
+                if (SetProperty(ref allAlgorithms, value)) this.allAlgorithms = value;
             }
         }
         private IAlgorithm selectedAlgorithm;
@@ -37,7 +37,7 @@ namespace LoadBalencerClassLibrary
         {
             get
             {
-                return selectedAlgorithm ?? new First();
+                return selectedAlgorithm ?? new HealthyAlgorithm();
             }
             set{
                 if (SetProperty(ref selectedAlgorithm, value)) this.selectedAlgorithm = value;

@@ -45,18 +45,9 @@ namespace LoadBalencerClassLibrary
         {
             get
             {
-                // set headers to disable browser cache
-                UpdateHeader("Connection", " Close");
-                //if (settings.AllowChangeHeaders)
-                //{
-                //    // Remove server and user headers (From assigment discription)
-                //    headers.Remove("User-Agent");
-                //    headers.Remove("Server");
-                //}
                 return $"{Method}\r\n{Headers}\r\n{Body}";
             }
         }
-        //TODO edit this function so the type is used to display different data
         public string LogItemInfo
         {
             get {

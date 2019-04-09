@@ -100,27 +100,47 @@ namespace LoadBalencerClassLibrary
                         var wantedServer = GetBestServer(cookieParams);
                         if (wantedServer != null) currentServer = wantedServer;
                     }
-                    byte[] responseBytes = await GetServerResponseAsync(currentServer, requestBytes);
-                    HttpRequest responseObject = new HttpRequest(ASCIIEncoding.ASCII.GetString(responseBytes));
-                    Session session = new Session(currentServer.Port);
-                    currentServer.Sessions.Add(session);
-                    responseObject.UpdateHeader("Set-Cookie", $"server = {currentServer.Port}, Session ={session.SessionId}");
-                    responseBytes = ASCIIEncoding.ASCII.GetBytes(responseObject.HttpString);
-                    await streamReader.WriteMessageWithBufferAsync(clientStream, responseBytes, bufferSize);
+                    await HandleServerResponse(bufferSize, clientStream, requestBytes, currentServer);
                 }
             }
         }
+
+        private async Task HandleServerResponse(int bufferSize, NetworkStream clientStream, byte[] requestBytes, Server currentServer)
+        {
+            if (currentServer == null) return;
+            byte[] responseBytes = await GetServerResponseAsync(currentServer, requestBytes);
+            HttpRequest responseObject = new HttpRequest(ASCIIEncoding.ASCII.GetString(responseBytes));
+            Session session = new Session(currentServer.Port);
+            currentServer.Sessions.Add(session);
+            if (currentServer.Port != session.ServerPort)
+            {
+                responseObject.UpdateHeader("Set-Cookie", $"server = {currentServer.Port}, Session ={session.SessionId}");
+            }
+            responseBytes = ASCIIEncoding.ASCII.GetBytes(responseObject.HttpString);
+            await streamReader.WriteMessageWithBufferAsync(clientStream, responseBytes, bufferSize);
+        }
+
         private async Task<byte[]> GetServerResponseAsync(Server server, byte[] requestBytes)
         {
-            using (TcpClient tcpClient = new TcpClient())
+            try
             {
-                await tcpClient.ConnectAsync(server.ServerURL, server.Port);
-                using (NetworkStream clientStream = tcpClient.GetStream())
+                using (TcpClient tcpClient = new TcpClient())
                 {
-                    await clientStream.WriteAsync(requestBytes, 0, requestBytes.Length);
-                    var responseBytes = await streamReader.GetBytesFromReading(1024, clientStream);
-                    return responseBytes;
+                    await tcpClient.ConnectAsync(server.ServerURL, server.Port);
+                    using (NetworkStream clientStream = tcpClient.GetStream())
+                    {
+                        await clientStream.WriteAsync(requestBytes, 0, requestBytes.Length);
+                        var responseBytes = await streamReader.GetBytesFromReading(1024, clientStream);
+                        return responseBytes;
+                    }
                 }
+            }
+            //if server cannot connect then pick a different server
+            catch (Exception)
+            {
+                server.Status = "Not Running";
+                return ASCIIEncoding.ASCII.GetBytes($"Server {server.ServerURL} on port {server.Port} was not reachable.\r\n" +
+                    $"Refresh to generate a new cookie and session"); // return empty byte array to send
             }
         }
 

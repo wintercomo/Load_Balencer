@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoadBalencer", "LoadBalence
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoadBalencerClassLibrary", "LoadBalencerClassLibrary\LoadBalencerClassLibrary.csproj", "{3C2B9B7F-8912-4625-95E2-A7BA71DA1EA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoadBalencerAlgorithms", "LoadBalencerAlgorithms\LoadBalencerAlgorithms.csproj", "{43A418B8-8302-4576-B4C4-D75FE029BF69}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoadBalencerAlgorithmsCL", "LoadBalencerAlgorithmsCL\LoadBalencerAlgorithmsCL.csproj", "{D3CCCB82-0D9E-41D8-81F9-EA294BC5269C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{3C2B9B7F-8912-4625-95E2-A7BA71DA1EA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C2B9B7F-8912-4625-95E2-A7BA71DA1EA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C2B9B7F-8912-4625-95E2-A7BA71DA1EA7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{43A418B8-8302-4576-B4C4-D75FE029BF69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{43A418B8-8302-4576-B4C4-D75FE029BF69}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{43A418B8-8302-4576-B4C4-D75FE029BF69}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{43A418B8-8302-4576-B4C4-D75FE029BF69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3CCCB82-0D9E-41D8-81F9-EA294BC5269C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3CCCB82-0D9E-41D8-81F9-EA294BC5269C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3CCCB82-0D9E-41D8-81F9-EA294BC5269C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3CCCB82-0D9E-41D8-81F9-EA294BC5269C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
