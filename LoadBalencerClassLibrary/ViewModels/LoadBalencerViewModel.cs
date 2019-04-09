@@ -14,6 +14,12 @@ namespace LoadBalencerClassLibrary
         public LoadBalencerViewModel()
         {
             this.allAlgorithms = new ObservableCollection<IAlgorithm>() {new HealthyAlgorithm()};
+            this.Servers = new ObservableCollection<Server>
+            {
+                new Server("localhost", 9001, "Normal"),
+                new Server("localhost", 9002, "Normal"),
+                new Server("localhost", 9003, "Normal")
+            };
         }
         public int Port
         {

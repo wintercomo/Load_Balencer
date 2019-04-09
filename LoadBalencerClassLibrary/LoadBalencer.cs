@@ -40,29 +40,36 @@ namespace LoadBalencerClassLibrary
 
 
         }
-        public async Task<ObservableCollection<Server>> CheckServerStatusAsync(ObservableCollection<Server> allServers)
+        public async Task CheckServerStatusAsync(ObservableCollection<Server> allServers)
         {
             foreach (var server in allServers)
             {
-                TcpClient tcpClient = await TryConnect(server);
-                if (tcpClient == null) server.Status = "Not running";
-                else
+                try
                 {
-                    var builder = new StringBuilder();
-                    builder.AppendLine("GET / HTTP/1.1");
-                    builder.AppendLine($"Host: {server.ServerURL}");
-                    builder.AppendLine("Connection: close");
-                    builder.AppendLine();
-                    var header = Encoding.ASCII.GetBytes(builder.ToString());
-                    await tcpClient.GetStream().WriteAsync(header, 0, header.Length);
-                    Stopwatch watch = Stopwatch.StartNew();
-                    await streamReader.GetBytesFromReading(2024, tcpClient.GetStream());
-                    watch.Stop();
-                    long elapsedMs = watch.ElapsedMilliseconds;
-                    UpdateServerStatus(server, elapsedMs);
+                    TcpClient tcpClient = await TryConnect(server);
+                    if (tcpClient == null) server.Status = "Not running";
+                    else
+                    {
+                        var builder = new StringBuilder();
+                        builder.AppendLine("GET / HTTP/1.1");
+                        builder.AppendLine($"Host: {server.ServerURL}");
+                        builder.AppendLine("Connection: close");
+                        builder.AppendLine();
+                        var header = Encoding.ASCII.GetBytes(builder.ToString());
+                        await tcpClient.GetStream().WriteAsync(header, 0, header.Length);
+                        Stopwatch watch = Stopwatch.StartNew();
+                        await streamReader.GetBytesFromReading(2024, tcpClient.GetStream());
+                        watch.Stop();
+                        long elapsedMs = watch.ElapsedMilliseconds;
+                        UpdateServerStatus(server, elapsedMs);
+                    }
+                }
+                catch (Exception)
+                {
+                    server.Status = "Not running";
+                    continue;
                 }
             }
-            return allServers;
         }
         private static void UpdateServerStatus(Server server, long elapsedMs)
         {
@@ -112,10 +119,7 @@ namespace LoadBalencerClassLibrary
             HttpRequest responseObject = new HttpRequest(ASCIIEncoding.ASCII.GetString(responseBytes));
             Session session = new Session(currentServer.Port);
             currentServer.Sessions.Add(session);
-            if (currentServer.Port != session.ServerPort)
-            {
-                responseObject.UpdateHeader("Set-Cookie", $"server = {currentServer.Port}, Session ={session.SessionId}");
-            }
+            responseObject.UpdateHeader("Set-Cookie", $"server = {currentServer.Port}, Session ={session.SessionId}");
             responseBytes = ASCIIEncoding.ASCII.GetBytes(responseObject.HttpString);
             await streamReader.WriteMessageWithBufferAsync(clientStream, responseBytes, bufferSize);
         }
@@ -139,8 +143,7 @@ namespace LoadBalencerClassLibrary
             catch (Exception)
             {
                 server.Status = "Not Running";
-                return ASCIIEncoding.ASCII.GetBytes($"Server {server.ServerURL} on port {server.Port} was not reachable.\r\n" +
-                    $"Refresh to generate a new cookie and session"); // return empty byte array to send
+                return ASCIIEncoding.ASCII.GetBytes($"Server {server.ServerURL} on port {server.Port} was not reachable. Refresh to generate a new cookie and session");
             }
         }
 

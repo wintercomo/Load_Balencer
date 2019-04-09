@@ -17,6 +17,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
         <TextBlock Grid.Column="0" Grid.Row="0" Margin="2">Server Lijst:</TextBlock>
         <ListBox Name="serverList" Grid.Column="0" Grid.Row="1" Margin="5">
@@ -28,8 +29,8 @@
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="100"/>
                         </Grid.ColumnDefinitions>
 
                         <Label Grid.Row="0" Grid.Column="0" Content="{Binding ServerURL}"/>
@@ -38,8 +39,32 @@
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Delete server"  Click="MenuItem_Click"/>
+                </ContextMenu>
+            </ListBox.ContextMenu>
         </ListBox>
 
+        <Grid Grid.Column="0" Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Label Grid.Column="0" Grid.Row="0" Content="Server URL:"></Label>
+            <TextBox Name="serverURLBox" Grid.Column="0" Grid.Row="1"></TextBox>
+
+            <Label Content="Port:" Grid.Column="1" Grid.Row="0"></Label>
+            <TextBox Name="serverPortBox" Grid.Column="1" Grid.Row="1"></TextBox>
+            
+            <Button Name="addServerBtn" Grid.Column="2" Grid.Row="1" Content="Add Server" Click="AddServerBtn_Click"></Button>
+        </Grid>
+        
         <TextBlock Grid.Column="1" Grid.Row="0">Load balencer:</TextBlock>
         <Grid Name="loadBalencerSettings" DataContext="{StaticResource LoadBalencerViewModel}" Grid.Column="1" Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -54,9 +79,9 @@
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
             <Label Grid.Column="0" Grid.Row="0" Content="Port"></Label>
-            <TextBox Name="PortBox" Grid.Column="1" Grid.Row="0" Text="{Binding Port, Mode = TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBox Name="loadBalencerPortBox" Grid.Column="1" Grid.Row="0" Text="{Binding Port, Mode = TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-            <Button Grid.ColumnSpan="2" Grid.Row="1" Content="Start/Stop load balencer" Click="Button_Click"></Button>
+            <Button Name="startLoadBalancerBtn" Grid.ColumnSpan="2" Grid.Row="1" Content="Start/Stop load balencer" Click="Button_Click"></Button>
             <Button Grid.ColumnSpan="2" Grid.Row="2" Content="Update server status" Click="Button_Click_1"></Button>
             <Button Grid.Column="3" Grid.Row="3" Content="Load Algorithms" Click="Button_Click_2"></Button>
 

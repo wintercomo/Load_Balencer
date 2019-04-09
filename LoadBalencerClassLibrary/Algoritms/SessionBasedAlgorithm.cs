@@ -15,10 +15,8 @@ namespace LoadBalencerClassLibrary.Algoritms
         {
             if (cookieParams == null) return allServers.First(server => server.Status != "Not running");
             string sessionId = cookieParams[1].Split('=')[1]; // cookieParam[1] = always sessionId
-            foreach (var server in allServers)
-            {
-                foreach (var session in server.Sessions) if (session.SessionId.ToString() == sessionId) return server;
-            }
+            Console.WriteLine($"Session ID {sessionId} To server");
+            foreach (var server in allServers) foreach (var session in server.Sessions) if (session.SessionId.ToString() == sessionId) return server;
             return allServers.First(server => server.Status != "Not running");
         }
 

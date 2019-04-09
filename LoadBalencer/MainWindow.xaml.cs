@@ -28,29 +28,24 @@ namespace LoadBalencer
     {
         readonly LoadBalencerServer loadBalencer;
         readonly LoadBalencerViewModel loadBalencerViewModel;
-        readonly ObservableCollection<Server> allServers;
         public MainWindow()
         {
             InitializeComponent();
-            allServers = new ObservableCollection<Server>
-            {
-                new Server("localhost", 9001, "Normal"),
-                new Server("localhost", 9002, "Normal"),
-                new Server("localhost", 9003, "Normal")
-            };
-            loadBalencerViewModel = new LoadBalencerViewModel() { Servers = allServers };
+            loadBalencerViewModel = (LoadBalencerViewModel)loadBalencerSettings.DataContext;
             loadBalencer = new LoadBalencerServer(loadBalencerViewModel);
-            serverList.ItemsSource = allServers;
+            serverList.ItemsSource = loadBalencerViewModel.Servers;
             AlgoritmComboBox.ItemsSource = loadBalencerViewModel.Algorithms;
             loadBalencerSettings.DataContext = loadBalencerViewModel;
         }
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            TcpListener tcplistener = loadBalencer.StartAServer(Int32.Parse(PortBox.Text));
+            TcpListener tcplistener = loadBalencer.StartAServer(Int32.Parse(loadBalencerPortBox.Text));
             int bufferSize = 2024;
+            startLoadBalancerBtn.IsEnabled = false;
+            loadBalencerPortBox.IsEnabled = false;
             while (true)
             {
-                loadBalencer.StartHealthChecker();
+                _ = Task.Run(() => loadBalencer.StartHealthChecker());
                 await Task.Run(async () => await loadBalencer.HandleHttpRequest(tcplistener, bufferSize));
 
             }
@@ -58,7 +53,7 @@ namespace LoadBalencer
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            _ = loadBalencer.CheckServerStatusAsync(allServers);
+            _ = loadBalencer.CheckServerStatusAsync(loadBalencerViewModel.Servers);
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
@@ -89,6 +84,23 @@ namespace LoadBalencer
                     continue;  // Can't load as .NET assembly, so ignore
                 }
             }
+        }
+
+        private void AddServerBtn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                loadBalencerViewModel.Servers.Add(new Server(serverURLBox.Text, int.Parse(serverPortBox.Text), "Not Running"));
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Server information was not in the correct format");
+            }
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            loadBalencerViewModel.Servers.Remove((Server)serverList.SelectedItem);
         }
     }
 }
