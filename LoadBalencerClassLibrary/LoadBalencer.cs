@@ -14,14 +14,16 @@ namespace LoadBalencerClassLibrary
 {
     public class LoadBalencerServer
     {
-        StreamReader streamReader = new StreamReader();
-        ObservableCollection<Server> allServers;
-        LoadBalencerViewModel loadBalencerViewModel;
         public LoadBalencerServer(LoadBalencerViewModel model)
         {
-            this.allServers = model.Servers;
-            this.loadBalencerViewModel = model;
+            this.AllServers = model.Servers;
+            this.LoadBalencerViewModel = model;
+            this.StreamReader = new StreamReader();
         }
+        public ObservableCollection<Server> AllServers { get; }
+        public LoadBalencerViewModel LoadBalencerViewModel { get; }
+
+        public StreamReader StreamReader { get; }
 
         public TcpListener StartAServer(int port)
         {
@@ -33,12 +35,10 @@ namespace LoadBalencerClassLibrary
         public void StartHealthChecker()
         {
             var timer = new System.Threading.Timer(
-            async e => await CheckServerStatusAsync(allServers),
+            async e => await CheckServerStatusAsync(AllServers),
             null,
             TimeSpan.Zero,
             TimeSpan.FromSeconds(100));
-
-
         }
         public async Task CheckServerStatusAsync(ObservableCollection<Server> allServers)
         {
@@ -58,7 +58,7 @@ namespace LoadBalencerClassLibrary
                         var header = Encoding.ASCII.GetBytes(builder.ToString());
                         await tcpClient.GetStream().WriteAsync(header, 0, header.Length);
                         Stopwatch watch = Stopwatch.StartNew();
-                        await streamReader.GetBytesFromReading(2024, tcpClient.GetStream());
+                        await StreamReader.GetBytesFromReading(2024, tcpClient.GetStream());
                         watch.Stop();
                         long elapsedMs = watch.ElapsedMilliseconds;
                         UpdateServerStatus(server, elapsedMs);
@@ -99,7 +99,7 @@ namespace LoadBalencerClassLibrary
                 {
                     using (NetworkStream clientStream = tcpClient.GetStream())
                     {
-                        byte[] requestBytes = await streamReader.GetBytesFromReading(bufferSize, clientStream);
+                        byte[] requestBytes = await StreamReader.GetBytesFromReading(bufferSize, clientStream);
                         HttpRequest requestObject = new HttpRequest(ASCIIEncoding.ASCII.GetString(requestBytes));
                         var cookieInfo = requestObject.GetHeader("Cookie");
                         Server currentServer = GetBestServer();
@@ -109,7 +109,7 @@ namespace LoadBalencerClassLibrary
                             var wantedServer = GetBestServer(cookieParams);
                             if (wantedServer != null) currentServer = wantedServer;
                         }
-                        await HandleServerResponse(bufferSize, clientStream, requestBytes, currentServer);
+                        await HandleServerResponse(bufferSize, clientStream, requestBytes, currentServer, cookieInfo);
                     }
                 }
             }
@@ -120,20 +120,27 @@ namespace LoadBalencerClassLibrary
             }
         }
 
-        private async Task HandleServerResponse(int bufferSize, NetworkStream clientStream, byte[] requestBytes, Server currentServer)
+        private async Task HandleServerResponse(int bufferSize, NetworkStream clientStream, byte[] requestBytes, Server currentServer, string cookieInfo)
         {
             if (currentServer == null)
             {
-                await streamReader.WriteMessageWithBufferAsync(clientStream, ASCIIEncoding.ASCII.GetBytes("All servers offline"), bufferSize);
+                await StreamReader.WriteMessageWithBufferAsync(clientStream, ASCIIEncoding.ASCII.GetBytes("All servers offline"), bufferSize);
                 return;
             }
             byte[] responseBytes = await GetServerResponseAsync(currentServer, requestBytes);
             HttpRequest responseObject = new HttpRequest(ASCIIEncoding.ASCII.GetString(responseBytes));
+            if (cookieInfo != null) responseBytes = SetSession(currentServer, responseObject);
+            await StreamReader.WriteMessageWithBufferAsync(clientStream, responseBytes, bufferSize);
+        }
+
+        private static byte[] SetSession(Server currentServer, HttpRequest responseObject)
+        {
+            byte[] responseBytes;
             Session session = new Session(currentServer.Port);
             currentServer.Sessions.Add(session);
             responseObject.UpdateHeader("Set-Cookie", $"server = {currentServer.Port}, Session ={session.SessionId}");
             responseBytes = ASCIIEncoding.ASCII.GetBytes(responseObject.HttpString);
-            await streamReader.WriteMessageWithBufferAsync(clientStream, responseBytes, bufferSize);
+            return responseBytes;
         }
 
         private async Task<byte[]> GetServerResponseAsync(Server server, byte[] requestBytes)
@@ -146,12 +153,12 @@ namespace LoadBalencerClassLibrary
                     using (NetworkStream clientStream = tcpClient.GetStream())
                     {
                         await clientStream.WriteAsync(requestBytes, 0, requestBytes.Length);
-                        var responseBytes = await streamReader.GetBytesFromReading(1024, clientStream);
+                        var responseBytes = await StreamReader.GetBytesFromReading(1024, clientStream);
                         return responseBytes;
                     }
                 }
             }
-            //if server cannot connect then pick a different server
+            //if server cannot connect then send response that server is down
             catch (Exception)
             {
                 server.Status = "Not Running";
@@ -161,8 +168,8 @@ namespace LoadBalencerClassLibrary
 
         private Server GetBestServer(string[] cookieParams = null)
         {
-            List<Server> onlineServers = allServers.Where(server => server.Status != "Not running").ToList();
-            IAlgorithm currentAlgorithm = loadBalencerViewModel.SelectedAlgorithm;
+            List<Server> onlineServers = AllServers.Where(server => server.Status != "Not running").ToList();
+            IAlgorithm currentAlgorithm = LoadBalencerViewModel.SelectedAlgorithm;
             if (cookieParams != null) return currentAlgorithm.GetBestServer(onlineServers, cookieParams);
             return currentAlgorithm.GetBestServer(onlineServers);
         }
