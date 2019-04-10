@@ -21,7 +21,7 @@ namespace LoadBalencerClassLibrary.Algoritms
             List<Server> onlineServers = allServers.Where(server => server.Status == "Normal").ToList();
             if (onlineServers.Count == 0) onlineServers = allServers.Where(server => server.Status == "Busy").ToList();
             if (onlineServers.Count == 0) onlineServers = allServers.Where(server => server.Status == "Down").ToList();
-            return onlineServers.First();
+            return onlineServers.Count > 0 ?  onlineServers.First() : null;
         }
 
         public string GetName()
