@@ -16,7 +16,7 @@ namespace LoadBalencerClassLibrary.Algoritms
         {
             var random = new Random();
             int index = random.Next(allServers.Count);
-            return allServers[index];
+            return allServers.Count > 0 ? allServers[index] : null;
         }
 
         public string GetName()

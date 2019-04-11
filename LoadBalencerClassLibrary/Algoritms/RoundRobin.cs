@@ -13,6 +13,7 @@ namespace LoadBalencerClassLibrary.Algoritms
         }
         public Server GetBestServer(List<Server> allServers, string[] cookieParams = null)
         {
+            if (allServers.Count == 0) return null;
             if (index >= allServers.Count) index = 0;
             int serverIndex = index;
             index++;

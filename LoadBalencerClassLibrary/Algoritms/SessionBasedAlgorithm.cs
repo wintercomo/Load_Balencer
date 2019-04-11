@@ -13,6 +13,7 @@ namespace LoadBalencerClassLibrary.Algoritms
         }
         public Server GetBestServer(List<Server> allServers, string[] cookieParams = null)
         {
+            if (allServers.Count == 0) return null;
             if (cookieParams == null) return allServers.First(server => server.Status != "Not running");
             string sessionId = cookieParams[1].Split('=')[1]; // cookieParam[1] = always sessionId
             Console.WriteLine($"Session ID {sessionId} To server");

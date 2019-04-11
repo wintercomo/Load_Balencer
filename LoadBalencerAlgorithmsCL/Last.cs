@@ -14,7 +14,7 @@ namespace LoadBalencerAlgorithmsCL
         }
         public Server GetBestServer(List<Server> allServers, string[] cookieParams = null)
         {
-            return allServers.Last();
+            return allServers.Count > 0 ? allServers.Last() : null;
         }
     }
 }
