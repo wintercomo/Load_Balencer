@@ -38,7 +38,7 @@ namespace LoadBalencerClassLibrary
             async e => await CheckServerStatusAsync(AllServers),
             null,
             TimeSpan.Zero,
-            TimeSpan.FromSeconds(100));
+            TimeSpan.FromSeconds(5));
         }
         public async Task CheckServerStatusAsync(ObservableCollection<Server> allServers)
         {
@@ -87,50 +87,34 @@ namespace LoadBalencerClassLibrary
             }
             catch (Exception)
             {
-                return null;
+                return null; // null is expected if connection connot be made
             }
         }
 
-        public async Task HandleHttpRequest(TcpListener tcplistener, int bufferSize)
+        public async Task HandleHttpRequest(TcpListener tcplistener)
         {
-            try
+            using (TcpClient tcpClient = await tcplistener.AcceptTcpClientAsync())
             {
-                using (TcpClient tcpClient = await tcplistener.AcceptTcpClientAsync())
+                using (NetworkStream clientStream = tcpClient.GetStream())
                 {
-                    using (NetworkStream clientStream = tcpClient.GetStream())
-                    {
-                        byte[] requestBytes = await StreamReader.GetBytesFromReading(bufferSize, clientStream);
-                        HttpRequest requestObject = new HttpRequest(ASCIIEncoding.ASCII.GetString(requestBytes));
-                        var cookieInfo = requestObject.GetHeader("Cookie");
-                        Server currentServer = GetBestServer();
-                        if (cookieInfo != null)
-                        {
-                            string[] cookieParams = cookieInfo.Split(',');
-                            var wantedServer = GetBestServer(cookieParams);
-                            if (wantedServer != null) currentServer = wantedServer;
-                        }
-                        await HandleServerResponse(bufferSize, clientStream, requestBytes, currentServer, cookieInfo);
-                    }
+                    byte[] requestBytes = await StreamReader.GetBytesFromReading(1024, clientStream);
+                    HttpRequest requestObject = new HttpRequest(ASCIIEncoding.ASCII.GetString(requestBytes));
+                    var cookieInfo = requestObject.GetHeader("Cookie");
+                    string[] cookieParams = null;
+                    if (cookieInfo != null) cookieParams = cookieInfo.Split(',');
+                    var currentServer = GetBestServer(cookieParams);
+                    if (currentServer != null) await HandleServerResponse(clientStream, requestBytes, currentServer, cookieInfo);
+                    else await StreamReader.WriteMessageWithBufferAsync(clientStream, ASCIIEncoding.ASCII.GetBytes("All servers offline"), 1024);
                 }
             }
-            catch (Exception)
-            {
-
-                throw;
-            }
         }
 
-        private async Task HandleServerResponse(int bufferSize, NetworkStream clientStream, byte[] requestBytes, Server currentServer, string cookieInfo)
+        private async Task HandleServerResponse(NetworkStream clientStream, byte[] requestBytes, Server currentServer, string cookieInfo)
         {
-            if (currentServer == null)
-            {
-                await StreamReader.WriteMessageWithBufferAsync(clientStream, ASCIIEncoding.ASCII.GetBytes("All servers offline"), bufferSize);
-                return;
-            }
             byte[] responseBytes = await GetServerResponseAsync(currentServer, requestBytes);
             HttpRequest responseObject = new HttpRequest(ASCIIEncoding.ASCII.GetString(responseBytes));
-            if (cookieInfo != null) responseBytes = SetSession(currentServer, responseObject);
-            await StreamReader.WriteMessageWithBufferAsync(clientStream, responseBytes, bufferSize);
+            if (cookieInfo != null && LoadBalencerViewModel.SelectedAlgorithm.GetType() == new SessionBasedAlgorithm().GetType()) responseBytes = SetSession(currentServer, responseObject);
+            await StreamReader.WriteMessageWithBufferAsync(clientStream, responseBytes, 1024);
         }
 
         private static byte[] SetSession(Server currentServer, HttpRequest responseObject)
@@ -161,7 +145,7 @@ namespace LoadBalencerClassLibrary
             //if server cannot connect then send response that server is down
             catch (Exception)
             {
-                server.Status = "Not Running";
+                server.Status = "Not running";
                 return ASCIIEncoding.ASCII.GetBytes($"Server {server.ServerURL} on port {server.Port} was not reachable. Refresh to generate a new cookie and session");
             }
         }
@@ -170,8 +154,7 @@ namespace LoadBalencerClassLibrary
         {
             List<Server> onlineServers = AllServers.Where(server => server.Status != "Not running").ToList();
             IAlgorithm currentAlgorithm = LoadBalencerViewModel.SelectedAlgorithm;
-            if (cookieParams != null) return currentAlgorithm.GetBestServer(onlineServers, cookieParams);
-            return currentAlgorithm.GetBestServer(onlineServers);
+            return currentAlgorithm.GetBestServer(onlineServers, cookieParams);
         }
     }
 }

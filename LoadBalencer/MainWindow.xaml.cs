@@ -40,13 +40,12 @@ namespace LoadBalencer
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
             TcpListener tcplistener = loadBalencer.StartAServer(Int32.Parse(loadBalencerPortBox.Text));
-            int bufferSize = 2024;
             startLoadBalancerBtn.IsEnabled = false;
             loadBalencerPortBox.IsEnabled = false;
+            _ = Task.Run(() => loadBalencer.StartHealthChecker());
             while (true)
             {
-                _ = Task.Run(() => loadBalencer.StartHealthChecker());
-                await Task.Run(async () => await loadBalencer.HandleHttpRequest(tcplistener, bufferSize));
+                await Task.Run(async () => await loadBalencer.HandleHttpRequest(tcplistener));
 
             }
         }
