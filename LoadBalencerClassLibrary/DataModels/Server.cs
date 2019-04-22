@@ -10,6 +10,7 @@ namespace LoadBalencerClassLibrary
         private string serverURL;
         private int port;
         private string status;
+        private string displayColor;
 
         public Server(string serverURL, int port, string status)
         {
@@ -18,6 +19,7 @@ namespace LoadBalencerClassLibrary
             this.Status = status;
             this.Sessions = new List<Session>();
         }
+        public List<Session> Sessions { get; set; }
 
         public string ServerURL
         {
@@ -41,9 +43,33 @@ namespace LoadBalencerClassLibrary
             set
             {
                 if (SetProperty(ref status, value)) this.status = value;
+                switch (value)
+                {
+                    case "Not running":
+                        DisplayColor =  "Gray";
+                        break;
+                    case "Normal":
+                        DisplayColor = "Green";
+                        break;
+                    case "Busy":
+                        DisplayColor = "Yellow";
+                        break;
+                    case "Down":
+                        DisplayColor = "Red";
+                        break;
+                    default:
+                        DisplayColor = "Gray";
+                        break;
+                }
             }
         }
-
-        public List<Session> Sessions { get; set; }
+        public string DisplayColor
+        {
+            set
+            {
+                if (SetProperty(ref displayColor, value)) this.displayColor = value;
+            }
+            get => this.displayColor;
+        }
     }
 }

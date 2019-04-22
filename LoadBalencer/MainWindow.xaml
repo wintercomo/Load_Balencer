@@ -28,11 +28,11 @@
                             <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="200"/>
                             <ColumnDefinition Width="100"/>
                             <ColumnDefinition Width="100"/>
                         </Grid.ColumnDefinitions>
-
+                        <Rectangle Grid.Row="0" Grid.ColumnSpan="3" Fill="{Binding DisplayColor}" />
                         <Label Grid.Row="0" Grid.Column="0" Content="{Binding ServerURL}"/>
                         <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Port}"/>
                         <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Status}"/>

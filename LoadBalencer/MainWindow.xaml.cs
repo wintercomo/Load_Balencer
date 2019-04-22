@@ -42,11 +42,10 @@ namespace LoadBalencer
             TcpListener tcplistener = loadBalencer.StartAServer(Int32.Parse(loadBalencerPortBox.Text));
             startLoadBalancerBtn.IsEnabled = false;
             loadBalencerPortBox.IsEnabled = false;
-            _ = Task.Run(() => loadBalencer.StartHealthChecker());
             while (true)
             {
+                loadBalencer.StartHealthChecker();
                 await Task.Run(async () => await loadBalencer.HandleHttpRequest(tcplistener));
-
             }
         }
 

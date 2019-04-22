@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LoadBalencerClassLibrary.Algoritms;
 using LoadBalencerClassLibrary.DataModels;
+using System.Threading;
 
 namespace LoadBalencerClassLibrary
 {
@@ -27,21 +28,21 @@ namespace LoadBalencerClassLibrary
 
         public TcpListener StartAServer(int port)
         {
-            Console.WriteLine(port);
             TcpListener listener = new TcpListener(IPAddress.Any, port);
             listener.Start();
             return listener;
         }
         public void StartHealthChecker()
         {
-            var timer = new System.Threading.Timer(
+            var _timer = new Timer(
             async e => await CheckServerStatusAsync(AllServers),
             null,
             TimeSpan.Zero,
             TimeSpan.FromSeconds(5));
         }
-        public async Task CheckServerStatusAsync(ObservableCollection<Server> allServers)
+        public async Task CheckServerStatusAsync(ObservableCollection<Server> allServers = null)
         {
+            Console.WriteLine("[NOTICE] Checking health!");
             foreach (var server in allServers.ToList())
             {
                 try
@@ -113,7 +114,10 @@ namespace LoadBalencerClassLibrary
         {
             byte[] responseBytes = await GetServerResponseAsync(currentServer, requestBytes);
             HttpRequest responseObject = new HttpRequest(ASCIIEncoding.ASCII.GetString(responseBytes));
-            if (cookieInfo != null && LoadBalencerViewModel.SelectedAlgorithm.GetType() == new SessionBasedAlgorithm().GetType()) responseBytes = SetSession(currentServer, responseObject);
+            if (cookieInfo != null 
+                && (LoadBalencerViewModel.SelectedAlgorithm.GetType() == new SessionBasedAlgorithm().GetType() 
+                || LoadBalencerViewModel.SelectedAlgorithm.GetType() == new CookieBasedAlgorithm().GetType()))
+                    responseBytes = SetSession(currentServer, responseObject);
             await StreamReader.WriteMessageWithBufferAsync(clientStream, responseBytes, 1024);
         }
 
